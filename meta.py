@@ -10,15 +10,9 @@ import requests
 import urllib
 
 
-# from flask import Flask
-# from flask_restful import Resource, Api
-
-# app = Flask(__name__)
-# api = Api(app)
-
-
 search_url = "https://store.playstation.com/chihiro-api/search/CA/en/999/%s?bucket=games&game_content_type=games&size=30&geoCountry=CA"
 
+best_api_key = "fjsr6ancrf4knq8vnxnyw82u"
 
 '''
 search games on ps store
@@ -30,6 +24,9 @@ def search_games_ps_store(query):
 
 	#simple get request
 	req = requests.get(to_search_url)
+	print req.encoding
+	print req.text
+
 	response = req.json()
 
 	if "links" not in response:
@@ -46,50 +43,38 @@ def search_games_ps_store(query):
 		item["platform"] = link["playable_platform"]
 		item["ps_price"] = None
 		item["plus_price"] = None
+		item["bestbuy_price"] = None
 
-		if "default_sku" not in link:
-			res.append(item)
-			break
-
-		sku = link["default_sku"]
-		item["ps_price"] = sku["display_price"]
-		item["plus_price"] = None
-
-		if "rewards" not in sku:
-			res.append(item)
-			break
-
-		rewards = sku["rewards"]
-		for reward in rewards:
-			if "is_plus" in reward and reward["is_plus"]:
-				item["plus_price"] = reward["display_price"]
-				break
+		insert_store_price(item, link)
+		# insert_best_buy_price(item)
 
 		res.append(item)
 	return res
 
 
-# class searchEndpoint(Resource):
-# 	def get(self, query):
-# 		return search_games_ps_store(query)
-
-# api.add_resource(searchEndpoint, '/<string:query>')
-
-# if __name__ == '__main__':
-#     app.run(debug=True)
 
 
 
-# '''
-# helper func
-# given item and link,
-# insert ps price info to item
-# '''
-# def insert_store_price(item, link):
-# 	print 
+'''
+helper func
+given item and link,
+insert ps price info to item
+'''
+def insert_store_price(item, link):
+	if "default_sku" not in link:
+		return
 
+	sku = link["default_sku"]
+	item["ps_price"] = sku["display_price"]
 
+	if "rewards" not in sku:
+		return
 
+	rewards = sku["rewards"]
+	for reward in rewards:
+		if "is_plus" in reward and reward["is_plus"]:
+			item["plus_price"] = reward["display_price"]
+			return
 
 
 
