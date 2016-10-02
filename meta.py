@@ -37,11 +37,20 @@ def search_games_ps_store(query):
 		item["name"] = link["name"]
 		item["id"] = link["id"]
 		item["platform"] = link["playable_platform"]
+		item["price"] = None
+		item["plus_price"] = None
+
+		if "default_sku" not in link:
+			res.append(item)
+			break
 
 		sku = link["default_sku"]
-
 		item["price"] = sku["display_price"]
 		item["plus_price"] = None
+
+		if "rewards" not in sku:
+			res.append(item)
+			break
 
 		rewards = sku["rewards"]
 		for reward in rewards:
@@ -50,4 +59,6 @@ def search_games_ps_store(query):
 
 		res.append(item)
 	return res
-	
+
+
+
