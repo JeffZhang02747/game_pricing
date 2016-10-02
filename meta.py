@@ -25,4 +25,29 @@ def search_games_ps_store(query):
 	req = requests.get(to_search_url)
 	response = req.json()
 
+	if "links" not in response:
+		return []
+
+	links = response["links"]
+
+	res = []
+
+	for link in links:
+		item = {}
+		item["name"] = link["name"]
+		item["id"] = link["id"]
+		item["platform"] = link["playable_platform"]
+
+		sku = link["default_sku"]
+
+		item["price"] = sku["display_price"]
+		item["plus_price"] = None
+
+		rewards = sku["rewards"]
+		for reward in rewards:
+			if "is_plus" in reward and reward["is_plus"]:
+				item["plus_price"] = reward["display_price"]
+
+		res.append(item)
+	return res
 	
