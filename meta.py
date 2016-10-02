@@ -10,9 +10,16 @@ import requests
 import urllib
 
 
+# from flask import Flask
+# from flask_restful import Resource, Api
+
+# app = Flask(__name__)
+# api = Api(app)
 
 
 search_url = "https://store.playstation.com/chihiro-api/search/CA/en/999/%s?bucket=games&game_content_type=games&size=30&geoCountry=CA"
+
+
 '''
 search games on ps store
 '''
@@ -37,7 +44,7 @@ def search_games_ps_store(query):
 		item["name"] = link["name"]
 		item["id"] = link["id"]
 		item["platform"] = link["playable_platform"]
-		item["price"] = None
+		item["ps_price"] = None
 		item["plus_price"] = None
 
 		if "default_sku" not in link:
@@ -45,7 +52,7 @@ def search_games_ps_store(query):
 			break
 
 		sku = link["default_sku"]
-		item["price"] = sku["display_price"]
+		item["ps_price"] = sku["display_price"]
 		item["plus_price"] = None
 
 		if "rewards" not in sku:
@@ -56,9 +63,44 @@ def search_games_ps_store(query):
 		for reward in rewards:
 			if "is_plus" in reward and reward["is_plus"]:
 				item["plus_price"] = reward["display_price"]
+				break
 
 		res.append(item)
 	return res
 
 
+# class searchEndpoint(Resource):
+# 	def get(self, query):
+# 		return search_games_ps_store(query)
+
+# api.add_resource(searchEndpoint, '/<string:query>')
+
+# if __name__ == '__main__':
+#     app.run(debug=True)
+
+
+
+# '''
+# helper func
+# given item and link,
+# insert ps price info to item
+# '''
+# def insert_store_price(item, link):
+# 	print 
+
+
+
+
+
+
+
+# '''
+# input: id of the game on PS store
+# output: compare price to other vendors
+
+# now just do this match by name, different vendors have different SKU for same game
+# '''
+# def price_compare(id):
+
+# 	print id
 
